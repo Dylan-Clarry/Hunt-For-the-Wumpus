@@ -1,0 +1,79 @@
+Option Explicit
+' ==== CP212 Windows Application Programming ===============+
+' Name: Dylan Clarry
+' Student ID: 160718680
+' Date: December 9th 2017
+' Program title: Assignment 5
+' Description: Hunt for the Wumpus
+'===========================================================+
+
+Private p_moveY As Integer
+Private p_moveX As Integer
+Private p_prevVal As Integer
+Private p_moves As Integer
+Private p_ammo As Integer
+Private p_score As Integer
+
+'======================= setters ==========================
+
+' Set moveY
+Property Let moveY(Y As Integer)
+    p_moveY = Y
+End Property
+
+' Set moveX
+Property Let moveX(X As Integer)
+    p_moveX = X
+End Property
+
+' Set  previousValue
+Property Let prevVal(val As Integer)
+    p_prevVal = val
+End Property
+
+' Set number of moves
+Property Let moves(n As Integer)
+    p_moves = n
+End Property
+
+' Set ammo
+Property Let ammo(n As Integer)
+    p_ammo = n
+End Property
+
+' Set score
+Property Let score(n As Integer)
+    p_score = n
+End Property
+
+'======================= getters ==========================
+
+' get moveY
+Property Get moveY() As Integer
+    moveY = p_moveY
+End Property
+
+' get moveX
+Property Get moveX() As Integer
+    moveX = p_moveX
+End Property
+
+' get previous value
+Property Get prevVal() As Integer
+    prevVal = p_prevVal
+End Property
+
+' get number of moves
+Property Get moves() As Integer
+    moves = p_moves
+End Property
+
+' get ammo
+Property Get ammo() As Integer
+    ammo = p_ammo
+End Property
+
+' get score
+Property Get score() As Integer
+    score = p_score
+End Property

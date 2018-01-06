@@ -1,0 +1,41 @@
+Option Explicit
+' ==== CP212 Windows Application Programming ===============+
+' Name: Dylan Clarry
+' Student ID: 160718680
+' Date: December 9th 2017
+' Program title: Assignment 5
+' Description: Hunt for the Wumpus
+'===========================================================+
+
+' display map
+Public Sub GridToMaze()
+
+    ' Declare variables
+    Dim i As Integer, c As Integer
+    Dim cell As Range, row As Range
+    Dim mazeRng As Range, gridRng As Range
+    
+    ' Get grid and maze ranges
+    Set mazeRng = Range("MazeBoard")
+    Set gridRng = chooseMap()
+
+    ' Set each value in grid board to maze board
+    i = 1
+    For Each row In mazeRng.Rows
+        c = 1
+        For Each cell In row.Cells
+             cell.Value = gridRng.Cells(i, c).Value
+             c = c + 1
+        Next cell
+        i = i + 1
+    Next row
+    
+End Sub
+
+' choose random map
+Function chooseMap() As Range
+    Dim str As String
+    str = "GridBoard_" & Int((4 - 0 + 1) * Rnd + 0)
+    Set chooseMap = Range(str)
+End Function
+ 

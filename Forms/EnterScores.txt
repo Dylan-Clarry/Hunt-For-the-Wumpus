@@ -1,0 +1,14 @@
+' enter name
+Private Sub EnterBtn_Click()
+    If NameTextBox.Value <> "" Then
+        Me.Hide
+        Scores.Show
+    Else
+        MsgBox "Please enter your name."
+    End If
+End Sub
+
+' initialize on open
+Private Sub UserForm_Initialize()
+    ScoreLabel.Caption = player.score
+End Sub

@@ -1,0 +1,74 @@
+
+' SQL connection to get scores
+Private Sub InitializeScores(cn As ADODB.Connection)
+    Dim rs As New ADODB.Recordset
+    Dim rowCount As Integer
+    Dim SQL As String
+    Dim scoreArr(10, 3) As Variant
+    Dim newArr As Variant
+    
+    'SQL select statement
+    SQL = "SELECT playerScore, playerName FROM topScores ORDER BY playerScore ASC"
+    
+    'open SQL file
+    rs.Open SQL, cn, adOpenDynamic, adLockOptimistic
+    rowCount = 0
+    
+    'fill course array then labelBox
+    With rs
+        'add new score first
+        .AddNew
+        .Fields("playerName") = EnterScores.NameTextBox.Value
+        .Fields("playerScore") = player.score
+        .update
+        Do Until rowCount = 10 Or .EOF
+            scoreArr(rowCount, 0) = rowCount + 1
+            scoreArr(rowCount, 1) = .Fields("playerName")
+            scoreArr(rowCount, 2) = .Fields("playerScore")
+            rowCount = rowCount + 1
+            .MoveNext
+        Loop
+    End With
+    
+    With highScoreListBox
+        .List = scoreArr
+        .ListIndex = 0
+    End With
+
+    rs.Close
+    Set rs = Nothing
+    
+    makeChart
+    
+End Sub
+
+' go to main menu
+Private Sub mainMenuBtn_Click()
+    Me.Hide
+    Unload Me
+    Quit
+End Sub
+
+' play again
+Private Sub playAgainBtn_Click()
+    Me.Hide
+    Unload Me
+    Restart
+End Sub
+
+' on userform open
+Private Sub UserForm_Initialize()
+    
+    'open connection
+    With cn
+        .ConnectionString = accessCd
+        .Provider = "Microsoft.ACE.OLEDB.12.0"
+        .Open
+    End With
+    
+    Call InitializeScores(cn)
+    cn.Close
+    Set cn = Nothing
+End Sub
+
+

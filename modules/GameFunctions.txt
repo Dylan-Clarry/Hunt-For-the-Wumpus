@@ -1,0 +1,181 @@
+Option Explicit
+' ==== CP212 Windows Application Programming ===============+
+' Name: Dylan Clarry
+' Student ID: 160718680
+' Date: December 9th 2017
+' Program title: Assignment 5
+' Description: Hunt for the Wumpus
+'===========================================================+
+
+Public currBlock As Range
+Public wumpusDetector As Range
+Public radar As Range
+Public quiver As Range
+Public game As Worksheet
+Public player As New playerObj
+Dim score As Integer
+
+' restart game
+Public Sub Restart()
+    
+    ' set game sheet
+    Set game = ActiveWorkbook.Sheets("Game")
+    
+    'set ranges
+    Set wumpusDetector = game.Range("WumpusDetector")
+    Set quiver = game.Range("Quiver")
+    Set radar = game.Range("Radar")
+    wumpusDetector.Value = "I DETECT A WUMPUS..."
+    
+    'setup maze
+    GridToMaze
+    
+    'setup player object
+    player.moveY = 4
+    player.moveX = 6
+    player.prevVal = 0
+    player.moves = 0
+    player.ammo = 3
+    player.score = 0
+    quiver.Value = player.ammo
+    radar.Value = ""
+    
+    ' setup current position
+    Set currBlock = game.Cells(player.moveY, player.moveX)
+    currBlock.Value = -1
+    
+End Sub
+
+' update after every move
+Public Sub update()
+    
+    ' player moves + 1
+    player.moves = player.moves + 1
+    radar.Value = ""
+    
+    'update wumpus detector
+    If player.prevVal = 0 Then
+        wumpusDetector.Value = "..."
+    ElseIf player.prevVal = 2 Then
+        wumpusDetector.Value = "A BIT BREEZY..."
+    ElseIf player.prevVal = 3 Then
+        wumpusDetector.Value = "YOU FELL DOWN A HOLE!"
+        MsgBox "You fell down a hole!"
+        Restart
+    ElseIf player.prevVal = 4 Then
+        wumpusDetector.Value = "SMELLS LIKE WUMPUS..."
+    ElseIf player.prevVal = 5 Then
+        wumpusDetector.Value = "THE WUMPUS GOT YOU!"
+        MsgBox "The Wumpus got you!"
+        Restart
+    
+    End If
+
+End Sub
+
+' move left
+Public Sub MoveLeft()
+    If game.Cells(player.moveY, player.moveX - 1) <> 1 Then
+        currBlock.Value = player.prevVal
+        player.prevVal = game.Cells(player.moveY, player.moveX - 1).Value
+        update
+        player.moveX = player.moveX - 1
+        Set currBlock = game.Cells(player.moveY, player.moveX)
+        currBlock.Value = -1
+    End If
+End Sub
+
+' move right
+Public Sub MoveRight()
+    If game.Cells(player.moveY, player.moveX + 1) <> 1 Then
+        currBlock.Value = player.prevVal
+        player.prevVal = game.Cells(player.moveY, player.moveX + 1).Value
+        update
+        player.moveX = player.moveX + 1
+        Set currBlock = game.Cells(player.moveY, player.moveX)
+        currBlock.Value = -1
+    End If
+End Sub
+
+' move up
+Public Sub MoveUp()
+    If game.Cells(player.moveY - 1, player.moveX) <> 1 Then
+        currBlock.Value = player.prevVal
+        player.prevVal = game.Cells(player.moveY - 1, player.moveX).Value
+        update
+        player.moveY = player.moveY - 1
+        Set currBlock = game.Cells(player.moveY, player.moveX)
+        currBlock.Value = -1
+    End If
+End Sub
+
+' move down
+Public Sub MoveDown()
+    If game.Cells(player.moveY + 1, player.moveX) <> 1 Then
+        currBlock.Value = player.prevVal
+        player.prevVal = game.Cells(player.moveY + 1, player.moveX).Value
+        update
+        player.moveY = player.moveY + 1
+        Set currBlock = game.Cells(player.moveY, player.moveX)
+        currBlock.Value = -1
+    End If
+End Sub
+
+Public Sub checkQuiver()
+    quiver.Value = player.ammo
+    If player.ammo = 0 Then
+        MsgBox "You have no arrows left!"
+        MsgBox "The Wumpus got you!"
+        Restart
+    End If
+End Sub
+
+'if you got the Wumpus
+Public Function gotTheWumpus(block As Integer) As Boolean
+    If block = 5 Then
+        radar.Value = "ITS A HIT!"
+        gotTheWumpus = True
+        player.score = player.moves - player.ammo
+        Won
+    Else
+        radar.Value = "YOU MISSED!"
+        gotTheWumpus = False
+    End If
+    
+End Function
+
+Public Sub shootLeft()
+    If player.ammo > 0 Then
+        player.ammo = player.ammo - 1
+        If gotTheWumpus(game.Cells(player.moveY, player.moveX - 1)) = False Then
+            checkQuiver
+        End If
+    End If
+End Sub
+
+Public Sub shootRight()
+    If player.ammo > 0 Then
+        player.ammo = player.ammo - 1
+        If gotTheWumpus(game.Cells(player.moveY, player.moveX + 1)) = False Then
+            checkQuiver
+        End If
+    End If
+End Sub
+
+Public Sub shootUp()
+    If player.ammo > 0 Then
+        player.ammo = player.ammo - 1
+        If gotTheWumpus(game.Cells(player.moveY - 1, player.moveX)) = False Then
+            checkQuiver
+        End If
+    End If
+End Sub
+
+Public Sub shootDown()
+    If player.ammo > 0 Then
+        player.ammo = player.ammo - 1
+        If gotTheWumpus(game.Cells(player.moveY + 1, player.moveX)) = False Then
+            checkQuiver
+        End If
+    End If
+End Sub

@@ -1,0 +1,89 @@
+Option Explicit
+' ==== CP212 Windows Application Programming ===============+
+' Name: Dylan Clarry
+' Student ID: 160718680
+' Date: December 9th 2017
+' Program title: Assignment 5
+' Description: Hunt for the Wumpus
+'===========================================================+
+
+Public cn As New ADODB.Connection
+Public rs As New ADODB.Recordset
+Public fileCd As String
+Public accessCd As String
+Public sheet As Worksheet
+
+'Play game
+Public Sub Play()
+    ActiveWorkbook.Sheets(2).Activate
+    Restart
+End Sub
+
+' Back to menu
+Public Sub Quit()
+    ActiveWorkbook.Sheets(1).Activate
+End Sub
+
+'Show manual
+Public Sub ShowManual()
+    Manual.Show
+End Sub
+
+' If player wins
+Public Sub Won()
+    Dim cn As New ADODB.Connection
+    Dim fileCd As String
+    
+    ' Set file path to DB
+    accessCd = "Data Source=" & Application.ActiveWorkbook.Path & "\highscores.accdb"
+    
+    EnterScores.Show
+End Sub
+
+' Create chart with DB
+Public Sub makeChart()
+    Dim cn As New ADODB.Connection
+    Dim rs As New ADODB.Recordset
+    Dim rowCount As Integer
+    Dim chartSheet As Worksheet
+    Dim SQL As String
+    
+    Set sheet = ActiveWorkbook.Sheets(4)
+    
+    ' Set file path to DB
+    accessCd = "Data Source=" & Application.ActiveWorkbook.Path & "\highscores.accdb"
+    
+    'open connection
+    With cn
+        .ConnectionString = accessCd
+        .Provider = "Microsoft.ACE.OLEDB.12.0"
+        .Open
+    End With
+    
+    
+    'SQL select statement
+    SQL = "SELECT playerScore, playerName FROM topScores ORDER BY playerScore ASC"
+    
+    'open SQL file
+    rs.Open SQL, cn
+    rowCount = 0
+    
+    ' output to sheet
+    With rs
+        Do Until rowCount = 10 Or .EOF
+            sheet.Range("A1").Offset(rowCount, 0).Value = .Fields("playerName")
+            sheet.Range("A1").Offset(rowCount, 1).Value = .Fields("playerScore")
+            rowCount = rowCount + 1
+            .MoveNext
+        Loop
+    End With
+
+    rs.Close
+    Set rs = Nothing
+    cn.Close
+    Set cn = Nothing
+    
+End Sub
+
+
+
